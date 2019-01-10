@@ -3775,15 +3775,6 @@ static void visual_refresh(RCore *core) {
 			}
 		}
 		r_cons_gotoxy (0, 0);
-		r_core_visual_title (core, color);
-#if 0
-		vi = r_config_get (core->config, "cmd.vprompt");
-		if (vi) {
-			char *output = r_core_cmd_str (core, vi);
-			r_cons_strcat_at (output, 10, 5, 20, 20);
-                        free (output);
-		}
-#endif
 	} else {
 #if 0
 		if (vi) {
@@ -3796,8 +3787,20 @@ static void visual_refresh(RCore *core) {
                         free (output);
 		}
 #endif
-		r_core_visual_title (core, color);
+		//r_core_visual_title (core, color);
 	}
+#if 1
+		vi = r_config_get (core->config, "cmd.vprompt");
+		if (vi && *vi) {
+			r_core_cmd0 (core, vi);
+#if 0
+			char *output = r_core_cmd_str (core, vi);
+			r_cons_strcat_at (output, 10, 5, 20, 20);
+                        free (output);
+#endif
+		}
+		r_core_visual_title (core, color);
+#endif
 	vcmd = r_config_get (core->config, "cmd.visual");
 	if (vcmd && *vcmd) {
 		// disable screen bounds when it's a user-defined command
@@ -3856,12 +3859,8 @@ static void visual_refresh(RCore *core) {
 	} else {
 		r_cons_reset ();
 	}
-	vi = r_config_get (core->config, "cmd.vprompt");
-	if (vi) {
-		int cols = r_config_get_i (core->config, "asm.comments");
-		char *output = r_core_cmd_str (core, vi);
-		r_cons_strcat_at (output, cols, 5, 40, 30);
-		free (output);
+	if (core->scr_gadgets) {
+		r_core_cmd0 (core, "pg");
 		r_cons_flush ();
 	}
 	core->cons->blankline = false;
@@ -3920,7 +3919,7 @@ R_API void r_core_visual_disasm_down(RCore *core, RAsmOp *op, int *cols) {
 }
 
 R_API int r_core_visual(RCore *core, const char *input) {
-	const char *cmdprompt, *teefile;
+	const char *teefile;
 	ut64 scrseek;
 	int wheel, flags, ch;
 	bool skip;
