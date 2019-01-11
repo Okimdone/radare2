@@ -2665,7 +2665,7 @@ R_API int r_core_prompt(RCore *r, int sync) {
 	}
 	free (r->cmdqueue);
 	r->cmdqueue = strdup (line);
-        if (r->scr_gadgets) {
+        if (r->scr_gadgets && *line && *line != 'q') {
                 r_core_cmd0 (r, "pg");
         }
 	return true;
