@@ -3302,7 +3302,7 @@ static int agraph_print(RAGraph *g, int is_interactive, RCore *core, RAnalFuncti
 			r_cons_flush ();
 		}
 	}
-	if (core->scr_gadgets) {
+	if (core && core->scr_gadgets) {
 		r_core_cmd0 (core, "pg");
 		r_cons_flush ();
 	}
