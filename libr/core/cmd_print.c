@@ -1,4 +1,4 @@
-/* radare - LGPL - Copyright 2009-2018 - pancake */
+/* radare - LGPL - Copyright 2009-2019 - pancake */
 
 #include "r_asm.h"
 #include "r_core.h"
@@ -989,12 +989,35 @@ static void cmd_print_gadget(RCore *core, const char *_input) {
 		RCoreGadget *g;
 		RListIter *iter;
 		r_list_foreach (core->gadgets, iter, g) {
-			r_cons_printf ("pg %d %d %d %d %s\n", g->x, g->y, g->w, g->h, g->cmd);
+			r_cons_printf ("\"pg %d %d %d %d %s\"\n", g->x, g->y, g->w, g->h, g->cmd);
 		}
 	} else if (*_input == 'b') { // "pgb"
 		eprintf ("TODO: Change gadget background color\n");
 	} else if (*_input == 'm') { // "pgm"
-		eprintf ("TODO: Moving gadgets is not yet supported\n");
+		int nth = atoi (_input + 1);
+		RCoreGadget *g = r_list_get_n (core->gadgets, nth);
+		if (g) {
+			char *input = strdup (_input);
+			char *space = strchr (input, ' ');
+			if (space) {
+				space++;
+			} else {
+				space = "";
+			}
+			RList *args = r_str_split_list (space, " ");
+			char *x = r_list_pop_head (args);
+			char *y = r_list_pop_head (args);
+			char *w = r_list_pop_head (args);
+			char *h = r_list_pop_head (args);
+			if (x && y && w && h) {
+				g->x = r_num_math (core->num, x);
+				g->y = r_num_math (core->num, y);
+				g->w = r_num_math (core->num, w);
+				g->h = r_num_math (core->num, h);
+			}
+			r_list_free (args);
+			free (input);
+		}
 	} else if (*_input == ' ') { // "pg "
 		char *input = strdup (_input);
 		RList *args = r_str_split_list (input, " ");
@@ -1002,7 +1025,7 @@ static void cmd_print_gadget(RCore *core, const char *_input) {
 		char *y = r_list_pop_head (args);
 		char *w = r_list_pop_head (args);
 		char *h = r_list_pop_head (args);
-		if (x&&y&&w&&h) {
+		if (x && y && w && h) {
 			int X = r_num_math (core->num, x);
 			int Y = r_num_math (core->num, y);
 			int W = r_num_math (core->num, w);

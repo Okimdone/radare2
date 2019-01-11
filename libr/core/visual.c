@@ -3775,32 +3775,17 @@ static void visual_refresh(RCore *core) {
 			}
 		}
 		r_cons_gotoxy (0, 0);
-	} else {
-#if 0
-		if (vi) {
-			r_core_cmd (core, vi, 0);
-		}
-		vi = r_config_get (core->config, "cmd.vprompt");
-		if (vi) {
-			char *output = r_core_cmd_str (core, vi);
-			r_cons_strcat_at (output, 10, 5, 20, 20);
-                        free (output);
-		}
-#endif
-		//r_core_visual_title (core, color);
 	}
-#if 1
-		vi = r_config_get (core->config, "cmd.vprompt");
-		if (vi && *vi) {
-			r_core_cmd0 (core, vi);
+	vi = r_config_get (core->config, "cmd.vprompt");
+	if (vi && *vi) {
+		r_core_cmd0 (core, vi);
 #if 0
-			char *output = r_core_cmd_str (core, vi);
-			r_cons_strcat_at (output, 10, 5, 20, 20);
-                        free (output);
+		char *output = r_core_cmd_str (core, vi);
+		r_cons_strcat_at (output, 10, 5, 20, 20);
+		free (output);
 #endif
-		}
-		r_core_visual_title (core, color);
-#endif
+	}
+	r_core_visual_title (core, color);
 	vcmd = r_config_get (core->config, "cmd.visual");
 	if (vcmd && *vcmd) {
 		// disable screen bounds when it's a user-defined command
